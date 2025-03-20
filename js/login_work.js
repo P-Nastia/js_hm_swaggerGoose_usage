@@ -2,9 +2,9 @@
 
 formRegister.onsubmit = (e) => {
     ClearErrors();
-    e.preventDefault(); 
+    e.preventDefault();
     const xhr = new XMLHttpRequest();
-    const url = "https://goose.itstep.click/api/Account/login"; 
+    const url = "https://goose.itstep.click/api/Account/login";
 
     const data = {
         email: document.getElementById("email").value,
@@ -19,7 +19,7 @@ formRegister.onsubmit = (e) => {
             if (xhr.status >= 200 && xhr.status < 300) {
                 const resp = xhr.responseText;
                 const token = JSON.parse(resp).token;
-                
+
                 localStorage.setItem("token", token);
                 localStorage.setItem('isLoggedIn',true);
                 ChangeMenu();
@@ -40,11 +40,12 @@ function HandleError(responseText) {
             if (response.errors.hasOwnProperty(field)) {
                 const fieldErrors = response.errors[field];
                 console.log("field:",field,"error",fieldErrors);
-                
+
                 errorMessages = fieldErrors;
                 switch (field) {
                     case "email": { emailError.hidden = false; emailError.textContent = errorMessages; break; }
                     case "password": { passwordError.hidden = false; passwordError.textContent = errorMessages; break; }
+                    case "invalid": { passwordError.hidden = false; passwordError.textContent = errorMessages; break; }
                 }
             }
         }

@@ -27,7 +27,7 @@ formRegister.onsubmit = (e) => {
                 const token = JSON.parse(resp).token;
                 localStorage.setItem("token", token);
                 localStorage.setItem('isLoggedIn', true);
-                location.href = '/home.html';
+                location.href = '/index.html';
                 ClearFields();
             } else {
                 console.error("Error:", xhr.status, xhr.responseText);

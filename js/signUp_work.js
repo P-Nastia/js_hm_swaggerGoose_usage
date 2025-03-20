@@ -23,11 +23,16 @@ formRegister.onsubmit = (e) => {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status >= 200 && xhr.status < 300) {
-                console.log("Success:", xhr.responseText);
+                const resp = xhr.responseText;
+                const token = JSON.parse(resp).token;
+                localStorage.setItem("token", token);
+                localStorage.setItem('isLoggedIn', true);
+                location.href = '/home.html';
                 ClearFields();
             } else {
                 console.error("Error:", xhr.status, xhr.responseText);
                 HandleError(xhr.responseText);
+                console.log(isLoggedIn);
             }
         }
     };
@@ -35,13 +40,6 @@ formRegister.onsubmit = (e) => {
     xhr.send(JSON.stringify(data));
 }
 
-function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0,
-            v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
 
 function HandleError(responseText) {
     const response = JSON.parse(responseText);

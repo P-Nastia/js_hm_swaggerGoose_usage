@@ -65,6 +65,7 @@ uploadImage.onchange = (event) => {
 
 saveImage.onclick = function (e) {
     if (cropper) {
+        console.log(avatar);
 
         var base64 = cropper.getCroppedCanvas().toDataURL();
 

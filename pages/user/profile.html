@@ -18,7 +18,7 @@
             <div class="bg-white p-8 rounded-2xl shadow-xl w-[90%] max-w-4xl flex items-center justify-center grid lg:grid-cols-2 gap-6">
                 <img id="userPhoto"
                      class="w-[300px] h-[300px] rounded-full border-2 border-[#0db865] shadow-lg object-cover"
-                     src="/images/no-avatar.png"
+                     src="https://i.gifer.com/6oa.gif"
                      alt="User Photo">
 
                 <div class="text-center lg:text-left">
@@ -59,16 +59,10 @@
 
     </script>
 
-    <script src="/js/account_available.js"></script>
-    <script>
-        if (localStorage.getItem('isLoggedIn') == 'true') {
-            ChangeMenu();
-        }
-    </script>
     <script>
         logout.onclick = function (e) {
-            localStorage.setItem('isLoggedIn', false);
-            location.href = '/login.html';
+            localStorage.removeItem('token');
+            location.href = '/pages/login.html';
         }
     </script>
 </body>

@@ -1,6 +1,6 @@
-﻿const formRegister = document.getElementById('formLogin');
+﻿const formLogin = document.getElementById('formLogin');
 
-formRegister.onsubmit = (e) => {
+formLogin.onsubmit = (e) => {
     ClearErrors();
     e.preventDefault();
     const xhr = new XMLHttpRequest();
@@ -21,8 +21,7 @@ formRegister.onsubmit = (e) => {
                 const token = JSON.parse(resp).token;
 
                 localStorage.setItem("token", token);
-                localStorage.setItem('isLoggedIn',true);
-                ChangeMenu();
+                
                 location.href='/index.html';
             } else {
                 HandleError(xhr.responseText);

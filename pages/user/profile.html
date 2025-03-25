@@ -48,7 +48,7 @@
                 const { data } = resp;
                 const { id, email, firstName, secondName, phone, photo } = data;
                 document.getElementById("userName").textContent = `${firstName} ${secondName}`;
-                document.getElementById("userPhoto").src = `https://goose.itstep.click/images/${photo}`;
+                document.getElementById("userPhoto").src = `https://goose.itstep.click/images/400_${photo}`;
                 document.getElementById("userEmail").textContent = email;
                 document.getElementById("userPhone").textContent = phone;
                 console.log("User profile", data);

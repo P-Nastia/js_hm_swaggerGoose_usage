@@ -128,7 +128,7 @@
                     const page = event.target.getAttribute('data-page');
                     search.page = page;
                     fetchCategories();
-                    console.log('Вибрано сторінку:', page);
+                    window.scrollTo(0, 0);
                 });
             });
         }

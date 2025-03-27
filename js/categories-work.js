@@ -38,13 +38,14 @@ async function fetchCategories() {
         <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
             ${item.priority}
         </td>
-        <td class="px-6 py-4">
+        <td class="px-6 py-4" id="${item.id}" >
             <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Remove</a>
         </td>
 </tr>
                         `;
 
         });
+
         searchDataPage();
     } catch (error) {
         console.error('Error fetching categories:', error);
@@ -106,3 +107,23 @@ function SearchCategories() {
     search.title = document.getElementById('searchInput').value;
     fetchCategories();
 }
+
+async function DeleteCategory(categoryId) {
+    
+    const response = await axios.delete(`https://goose.itstep.click/api/Categories/delete/${categoryId}`, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    });
+    fetchCategories();
+}
+
+listCategories.addEventListener('click', function (event) {
+    if (event.target.closest('tr')) {
+        const clickedRow = event.target.closest('tr');
+
+        const categoryId = clickedRow.querySelector('td:nth-child(5)').id;
+        DeleteCategory(categoryId);
+    }
+});

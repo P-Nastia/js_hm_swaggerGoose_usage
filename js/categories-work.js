@@ -116,6 +116,7 @@ function SearchCategories() {
         url.searchParams.delete('category');
         history.pushState({}, '', url);
     }
+    search.page = 1;
 
     fetchCategories();
 }

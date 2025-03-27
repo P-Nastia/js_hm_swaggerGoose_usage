@@ -104,7 +104,19 @@ function loadPagination(pages, currentPage) {
 }
 
 function SearchCategories() {
-    search.title = document.getElementById('searchInput').value;
+    const searchValue = document.getElementById('searchInput').value;
+    search.title = searchValue;
+    const url = new URL(window.location.href);
+    if (searchValue) {
+        
+        url.searchParams.set('category', searchValue);
+        history.pushState({}, '', url); 
+
+    } else {
+        url.searchParams.delete('category');
+        history.pushState({}, '', url);
+    }
+
     fetchCategories();
 }
 
@@ -125,5 +137,14 @@ listCategories.addEventListener('click', function (event) {
 
         const categoryId = clickedRow.querySelector('td:nth-child(5)').id;
         DeleteCategory(categoryId);
+    }
+});
+
+window.addEventListener('load', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+    if (category) {
+        search.title = category;
+        fetchCategories();
     }
 });

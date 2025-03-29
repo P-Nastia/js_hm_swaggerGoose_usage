@@ -11,6 +11,10 @@ center {
     display: none !important;
 }*/
 
+.Category {
+    margin: 8% 35% 0 45%
+}
+
 .my-container {
     margin-left:35%;
     margin-right:35%;
@@ -34,6 +38,10 @@ center {
     .password {
         width: 180px;
     }
+
+    .Category {
+        margin: 8% 25% 0 35%
+    }
 }
 
 @media only screen and (max-width: 1200px) {
@@ -44,6 +52,10 @@ center {
     .password {
         width: 150px;
     }
+
+    .Category {
+        margin: 8% 20% 0 40%
+    }
 }
 
 @media only screen and (max-width: 992px) {
@@ -53,5 +65,9 @@ center {
     }
     .password {
         width: 120px;
+    }
+
+    .Category {
+        margin: 8% 15% 0 20%
     }
 }

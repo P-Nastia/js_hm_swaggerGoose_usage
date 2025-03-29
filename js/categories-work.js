@@ -67,28 +67,51 @@ async function fetchCategories() {
 
         categories.forEach(item => {
             listCategories.innerHTML += `
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <tr id="${item.id}"  class="bg-white border-b  border-gray-200 hover:bg-gray-50 ">
         <td class="p-4">
             <img src="https://goose.itstep.click/images/100_${item.image}" alt="Apple Watch">
         </td>
-        <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+        <td class="px-6 py-4 font-semibold text-gray-900 ">
             ${item.title}
         </td>
-        <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+        <td class="px-6 py-4 font-semibold text-gray-900 ">
             ${item.urlSlug}
         </td>
-        <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+        <td class="px-6 py-4 font-semibold text-gray-900 ">
             ${item.priority}
         </td>
-        <td class="px-6 py-4" id="${item.id}" >
-            <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Remove</a>
+        <td class="px-6 py-4" >
+            <a href="#" class="font-medium text-red-600 hover:underline remove-category">Remove</a>
         </td>
         <td class="px-6 py-4" >
-            <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Edit</a>
+            <a href="#" class="font-medium text-red-600 hover:underline edit-category">Edit</a>
         </td>
 </tr>
                         `;
 
+        });
+
+        const removeBtns = document.querySelectorAll('.remove-category');
+        const editBtns = document.querySelectorAll('.edit-category');
+        
+        removeBtns.forEach(button => {
+            button.addEventListener('click', function (event) {
+                
+                event.preventDefault();
+                const categoryId = this.closest('tr').id;
+                
+                DeleteCategory(categoryId);
+            });
+        });
+
+        editBtns.forEach(button => {
+            button.addEventListener('click', function (event) {
+
+                event.preventDefault();
+                const categoryId = this.closest('tr').id;
+
+                EditCategory(categoryId);
+            });
         });
 
         searchDataPage();
@@ -122,27 +145,27 @@ function loadPagination(pages, currentPage) {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = `
 <li>
-        <a href="#" data-page="${-1}" class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
+        <a href="#" data-page="${-1}" class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 ">Previous</a>
 </li>
 `;
     for (let i = 1; i <= pages; i++) {
         if (i == currentPage) {
             pagination.innerHTML += `
                         <li>
-          <a href="#" aria-current="page" data-page="${i}" class="z-10 flex items-center justify-center px-4 h-10 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">${i}</a>
+          <a href="#" aria-current="page" data-page="${i}" class="z-10 flex items-center justify-center px-4 h-10 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 ">${i}</a>
         </li>`;
         }
         else {
             pagination.innerHTML += `
          <li>
-             <a href="#"  data-page="${i}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">${i}</a>
+             <a href="#"  data-page="${i}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">${i}</a>
          </li>
          `;
         }
     }
     pagination.innerHTML += `
 <li>
-        <a href="#" data-page="${0}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
+        <a href="#" data-page="${0}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">Next</a>
 </li>
 `;
 
@@ -161,11 +184,15 @@ async function DeleteCategory(categoryId) {
     fetchCategories();
 }
 
-listCategories.addEventListener('click', function (event) {
-    if (event.target.closest('tr')) {
-        const clickedRow = event.target.closest('tr');
-
-        const categoryId = clickedRow.querySelector('td:nth-child(5)').id;
-        DeleteCategory(categoryId);
-    }
-});
+async function EditCategory(categoryId) {
+    const response = await axios.get(`https://goose.itstep.click/api/Categories/get/${categoryId}`, {
+        headers: {
+            'Accept': '*/*'
+        }
+    });
+    const { data } = response;
+    console.log(data);
+    const json= JSON.stringify(data);
+    localStorage.setItem('categoryEdit', json);
+    location.href = '/pages/admin/categories/editCategory.html';
+}

@@ -3,12 +3,54 @@
     title: ''
 };
 
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    let searchParams = {
+        page: new URLSearchParams(window.location.search).get('page') || 1,
+        title: new URLSearchParams(window.location.search).get('title') || '',
+    };
+
+    document.getElementById('title').value = searchParams.title;
+
+    search = {
+        ...search, ...searchParams
+    };
+
+    fetchCategories();
+})
+
+const formSearch = document.getElementById('formSearch');
+
+formSearch.addEventListener('submit', (event) => {
+
+    event.preventDefault();
+
+    const formData = new FormData(formSearch);
+    const values = {};
+    for (const [name, value] of formData.entries()) {
+        values[name] = value;
+    }
+    search = { ...search, ...values, page: 1 };
+
+    search = Object.fromEntries(
+        Object.entries(search).filter(([_, value]) => value !== null && value !== undefined && value !== "")
+    );
+
+    console.log("url", `${window.location.href}?${Qs.stringify(search)}`)
+
+    history.pushState(null, null, `?${Qs.stringify(search)}`);
+
+
+    fetchCategories();
+})
+
 async function fetchCategories() {
     try {
 
         console.log("qs", Qs.stringify(search));
         const query = Qs.stringify(search);
-        const pagination = document.getElementById('pagination');
+      
 
         const response = await axios.get(`https://goose.itstep.click/api/Categories/search?${query}`, {
             headers: {
@@ -41,6 +83,9 @@ async function fetchCategories() {
         <td class="px-6 py-4" id="${item.id}" >
             <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Remove</a>
         </td>
+        <td class="px-6 py-4" >
+            <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Edit</a>
+        </td>
 </tr>
                         `;
 
@@ -52,7 +97,6 @@ async function fetchCategories() {
     }
 }
 
-fetchCategories();
 
 function searchDataPage() {
     document.querySelectorAll('[data-page]').forEach(element => {
@@ -75,6 +119,7 @@ function searchDataPage() {
 }
 
 function loadPagination(pages, currentPage) {
+    const pagination = document.getElementById('pagination');
     pagination.innerHTML = `
 <li>
         <a href="#" data-page="${-1}" class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
@@ -103,23 +148,7 @@ function loadPagination(pages, currentPage) {
 
 }
 
-function SearchCategories() {
-    const searchValue = document.getElementById('searchInput').value;
-    search.title = searchValue;
-    const url = new URL(window.location.href);
-    if (searchValue) {
-        
-        url.searchParams.set('category', searchValue);
-        history.pushState({}, '', url); 
 
-    } else {
-        url.searchParams.delete('category');
-        history.pushState({}, '', url);
-    }
-    search.page = 1;
-
-    fetchCategories();
-}
 
 async function DeleteCategory(categoryId) {
     
@@ -138,14 +167,5 @@ listCategories.addEventListener('click', function (event) {
 
         const categoryId = clickedRow.querySelector('td:nth-child(5)').id;
         DeleteCategory(categoryId);
-    }
-});
-
-window.addEventListener('load', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category');
-    if (category) {
-        search.title = category;
-        fetchCategories();
     }
 });

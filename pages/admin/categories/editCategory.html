@@ -6,6 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/slugify@1.6.0/slugify.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link href="/css/style.css" rel="stylesheet" />
     <title></title>
 </head>
@@ -17,6 +18,7 @@
 
     <script>loadDOM('/partials/header.html');</script>
     <script>loadDOM('/partials/asideAdminPanel.html');</script>
+    <script>loadDOM('/partials/loading.html')</script>
     <br />
     <div id="addCategoryPage" class="Category">
         <div class="relative bg-white rounded-lg shadow-sm">
@@ -72,7 +74,7 @@
         function updateSlug() {
             const name = document.getElementById('name').value;
             let slug = slugify(name);
-            slug = slug.toLowerCase(); 
+            slug = slug.toLowerCase();
             slug = slug.replace(/[@#$']/g, '');
             document.getElementById('slug').value = slug;
         }

@@ -6,37 +6,21 @@ const category = localStorage.getItem('categoryEdit');
 
 categoryForm.onsubmit = (e) => {
     ClearErrors();
-    e.preventDefault(); 
-    let newImage;
+    e.preventDefault();
+    let newImage = null;
 
-    if (document.getElementById('avatar').src == `https://goose.itstep.click/images/100_${JSON.parse(category).image}`) {
-        
-        var img = new Image();
-        img.src = document.getElementById('avatar').src;
-        img.setAttribute('crossOrigin', 'anonymous');
-        img.onload = function () {
-            var canvas = document.createElement("canvas");
-            canvas.width = document.getElementById('avatar').width;
-            canvas.height = document.getElementById('avatar').height;
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
-            var dataURL = canvas.toDataURL("image/png");
-            
-            newImage = dataURL.replace(/^data:image\/?[A-z]*;base64,/,"");
-        }
-
-       
-    } else {
-        newImage = document.getElementById('avatar').src;
+    const avatarSrc = document.getElementById('avatar').src;
+    if (avatarSrc.startsWith("data:")) {
+        newImage = avatarSrc;
     }
 
     const xhr = new XMLHttpRequest();
 
     const data = {
-        id: JSON.parse(category).id,
-        title:document.getElementById("name").value,
+        id: new URLSearchParams(window.location.search).get('id'),
+        title: document.getElementById("name").value,
         priority: document.getElementById("priority").value,
-        image: newImage,
+        ...(newImage !== null && { image: newImage }),
         urlSlug: document.getElementById("slug").value
     };
     const url = `https://goose.itstep.click/api/Categories/edit?${data}`;
@@ -44,7 +28,7 @@ categoryForm.onsubmit = (e) => {
 
     xhr.open("PUT", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
-
+    
     let promise = new Promise(function (resolve, reject) {
         pbContainer.hidden = false;
         let i = 0;
@@ -65,6 +49,7 @@ categoryForm.onsubmit = (e) => {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status >= 200 && xhr.status < 300) {
+                categoryPB.style.width = "100%";
                 const resp = xhr.responseText;
                 localStorage.removeItem('categoryEdit');
                 location.href = "/pages/admin/categories/categories.html";
@@ -99,24 +84,22 @@ function ClearErrors() {
     imageError.hidden = true;
 }
 
-window.addEventListener('load', () => {
-   
-    if (category) {
-        
-        const editBtn = document.getElementById('editBtn');
-        const cancelEdit = document.getElementById('cancelEdit');
-        const data = JSON.parse(category);
-        
-        cancelEdit.addEventListener('click', function (event) {
-            event.preventDefault();
-            console.log('cancelEdit');
-            localStorage.removeItem('categoryEdit');
-            location.href = '/pages/admin/categories/categories.html';
-        });
-        document.getElementById('avatar').src = `https://goose.itstep.click/images/100_${data.image}`;
-        document.getElementById('name').value = data.title;
-        document.getElementById('priority').value = data.priority;
-        document.getElementById('slug').value = data.urlSlug;
-    }
+window.addEventListener('load', async () => {
+    show_loading();
+    const id = new URLSearchParams(window.location.search).get('id') || null;
+    console.log('id', id);
+    const response = await axios.get(`https://goose.itstep.click/api/Categories/get/${id}`, {
+        headers: {
+            'Accept': '*/*'
+        }
+    });
+    const { data } = response;
+    console.log('Get category by Id', data);
+
+    document.getElementById('avatar').src = `https://goose.itstep.click/images/100_${data.image}`;
+    document.getElementById('name').value = data.title;
+    document.getElementById('priority').value = data.priority;
+    document.getElementById('slug').value = data.urlSlug;
+    hide_loading();
 
 });

@@ -81,45 +81,59 @@ async function fetchCategories() {
             ${item.priority}
         </td>
         <td class="px-6 py-4" >
-            <a href="#" class="font-medium text-red-600 hover:underline remove-category">Remove</a>
-        </td>
-        <td class="px-6 py-4" >
-            <a href="#" class="font-medium text-red-600 hover:underline edit-category">Edit</a>
+           <a href="/pages/admin/categories/editCategory.html?id=${item.id}" class="font-medium text-red-600 dark:text-blue-500 hover:underline">
+           <i class="fa fa-3x fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+        <a href="#" data-delete="${item.id}" data-delete-name="${item.title}" data-modal-target="deleteModal" data-modal-toggle="deleteModal" class=" font-medium text-red-600 dark:text-blue-500 hover:underline">
+           <i class="fa fa-3x fa-trash" aria-hidden="true"></i>
+        </a>
         </td>
 </tr>
                         `;
 
         });
-
-        const removeBtns = document.querySelectorAll('.remove-category');
-        const editBtns = document.querySelectorAll('.edit-category');
-        
-        removeBtns.forEach(button => {
-            button.addEventListener('click', function (event) {
-                
-                event.preventDefault();
-                const categoryId = this.closest('tr').id;
-                
-                DeleteCategory(categoryId);
+        document.querySelectorAll('[data-modal-target]').forEach(button => {
+            button.addEventListener('click', () => {
+                const modalId = button.getAttribute('data-modal-target');
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('hidden'); 
+                }
             });
         });
 
-        editBtns.forEach(button => {
-            button.addEventListener('click', function (event) {
-
-                event.preventDefault();
-                const categoryId = this.closest('tr').id;
-
-                EditCategory(categoryId);
+        document.querySelectorAll('[data-modal-hide]').forEach(button => {
+            button.addEventListener('click', () => {
+                const modalId = button.getAttribute('data-modal-hide');
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('hidden'); 
+                }
             });
         });
 
+        deleteDataItem();
         searchDataPage();
     } catch (error) {
         console.error('Error fetching categories:', error);
     }
 }
 
+function deleteDataItem() {
+    document.querySelectorAll('[data-delete]').forEach(element => {
+        element.addEventListener('click', event => {
+            event.preventDefault();
+            const link = event.target.closest('a[data-delete]');
+
+            const deleteId = link.getAttribute('data-delete');
+            const deleteName = link.getAttribute('data-delete-name');
+
+            let elementQuestion = document.getElementById('question');
+            elementQuestion.textContent = `Ви впевнені, що хочете видалити '${deleteName}?'`;
+            elementQuestion.setAttribute('data-content', deleteId);
+        });
+    });
+}
 
 function searchDataPage() {
     document.querySelectorAll('[data-page]').forEach(element => {
@@ -171,18 +185,6 @@ function loadPagination(pages, currentPage) {
 
 }
 
-
-
-async function DeleteCategory(categoryId) {
-    
-    const response = await axios.delete(`https://goose.itstep.click/api/Categories/delete/${categoryId}`, {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    });
-    fetchCategories();
-}
 
 async function EditCategory(categoryId) {
     const response = await axios.get(`https://goose.itstep.click/api/Categories/get/${categoryId}`, {

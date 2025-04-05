@@ -131,6 +131,8 @@ function deleteDataItem() {
             let elementQuestion = document.getElementById('question');
             elementQuestion.textContent = `Ви впевнені, що хочете видалити '${deleteName}?'`;
             elementQuestion.setAttribute('data-content', deleteId);
+            let deleteBt = document.getElementById('deleteBt');
+            deleteBt.setAttribute('data-content', "category");
         });
     });
 }

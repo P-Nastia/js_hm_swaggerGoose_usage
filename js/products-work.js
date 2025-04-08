@@ -2,7 +2,7 @@
 async function fetchProducts() {
     try {
 
-        const response = await axios.get(`https://goose.itstep.click/api/Products/list`, {
+        const response = await axios.get(`${window.API_BASE_URL}/api/Products/list`, {
             headers: {
                 'Accept': '*/*'
             }
@@ -15,7 +15,7 @@ async function fetchProducts() {
             listCategories.innerHTML += `
                         <tr id="${item.id}"  class="bg-white border-b  border-gray-200 hover:bg-gray-50 ">
         <td class="p-4">
-            <img src="https://goose.itstep.click/images/100_${item.images[0]}" alt="Apple Watch">
+            <img src="${window.API_BASE_URL}/images/100_${item.images[0]}" alt="Apple Watch">
         </td>
         <td class="px-6 py-4 font-semibold text-gray-900 ">
             ${item.name}

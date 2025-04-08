@@ -4,7 +4,7 @@ formLogin.onsubmit = (e) => {
     ClearErrors();
     e.preventDefault();
     const xhr = new XMLHttpRequest();
-    const url = "https://goose.itstep.click/api/Account/login";
+    const url = `${window.API_BASE_URL}/api/Account/login`;
 
     const data = {
         email: document.getElementById("email").value,
@@ -21,7 +21,7 @@ formLogin.onsubmit = (e) => {
                 const token = JSON.parse(resp).token;
 
                 localStorage.setItem("token", token);
-                
+
                 location.href='/index.html';
             } else {
                 HandleError(xhr.responseText);

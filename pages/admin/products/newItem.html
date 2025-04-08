@@ -87,6 +87,7 @@
         const fileInput = document.getElementById('imageInput');
         const imageContainer = document.getElementById('imagesList');
         let ids = [];
+        let fileList = [];
 
         fileInput.addEventListener('change', async function () {
 
@@ -95,17 +96,77 @@
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 if (file.type.startsWith('image/')) {
+                    fileList.push(file);
+                    
                     let objectURL = URL.createObjectURL(file);
-                    show_loading();
-                    let data = await UploadImage(file, objectURL);
-                    imageContainer.innerHTML += `
-                        <img class="w-full h-24 p-1 rounded-lg shadow-lg"  src="https://goose.itstep.click/images/100_${data.name}"/>
-                        `;
-                    ids.push(data.id);
-                    hide_loading();
+
+                    const imgElement = document.createElement('img');
+                    imgElement.classList.add('w-full', 'h-24', 'p-1', 'rounded-lg', 'shadow-lg');
+                    imgElement.src = objectURL;
+                    imgElement.setAttribute('draggable', 'true'); 
+                    imgElement.dataset.index = fileList.length - 1;
+                    
+
+                    imgElement.addEventListener('dragstart', (e) => {
+                        // при переміщенні елемента, сетяться дані по індексу для його перестановки відповідно до розміщення інших елементів
+                        e.dataTransfer.setData('index', e.target.dataset.index);
+                    });
+
+                    imgElement.addEventListener('dblclick', (e) => {
+                        
+                        imgElement.remove();
+                        
+                        fileList.splice(fileList.indexOf(file),1);
+                       
+                        updateImageIndexes();
+                    });
+
+                    imageContainer.appendChild(imgElement);
                 }
             }
         });
+
+        imageContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation(); //запобігає переданню події до іншиї елементів (parent)
+        });
+
+        imageContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // тут витягується індекс тої фото, який було засечено вище
+            const draggedImageIndex = e.dataTransfer.getData('index');
+            const toReplaceImage = e.target;
+
+            if (toReplaceImage && toReplaceImage.tagName === 'IMG') {
+                const toReplaceImageIndex = toReplaceImage.dataset.index;
+                reorderImages(draggedImageIndex, toReplaceImageIndex);
+            }
+        });
+
+        function reorderImages(draggedImageIndex, toReplaceImageIndex) {
+            const images = Array.from(imageContainer.getElementsByTagName('img'));
+            const draggedImage = images[draggedImageIndex];
+            const toReplaceImage = images[toReplaceImageIndex];
+
+            if (draggedImage && toReplaceImage) {
+                
+                if (draggedImageIndex < toReplaceImageIndex) {
+                    imageContainer.insertBefore(draggedImage, toReplaceImage.nextSibling);
+                } else {
+                    imageContainer.insertBefore(draggedImage, toReplaceImage);
+                }
+                updateImageIndexes();
+            }
+        } 
+
+        function updateImageIndexes() {
+            const images = Array.from(imageContainer.getElementsByTagName('img'));
+            images.forEach((img, index) => {
+                img.dataset.index = index; 
+            });
+        }
 
         async function UploadImage(file, objectURL) {
             return new Promise((resolve, reject) => {
@@ -124,7 +185,7 @@
                         URL.revokeObjectURL(objectURL);
 
 
-                        const response = await axios.post('https://goose.itstep.click/api/Products/upload', {
+                        const response = await axios.post(`${window.API_BASE_URL}/api/Products/upload`, {
                             image: base64String
                         }, {
                             headers: {
@@ -150,7 +211,7 @@
         document.addEventListener("DOMContentLoaded", async () => {
             console.log("Load Dom");
             try {
-                var list = await axios.get("https://goose.itstep.click/api/Categories/list");
+                var list = await axios.get(`${window.API_BASE_URL}/api/Categories/list`);
                 const { data } = list;
 
                 const selectElement = document.getElementById('category');
@@ -191,14 +252,26 @@
 
     <script>
         var createProductForm = document.getElementById('createProductForm');
-        createProductForm.addEventListener("submit", (e) => {
+        createProductForm.addEventListener("submit", async (e) => { 
             e.preventDefault();
             console.log("Working submit form");
+
+            let ids = [];
+
+            for (let file of fileList) {
+                let objectURL = URL.createObjectURL(file);
+                show_loading();
+
+                let data = await UploadImage(file, objectURL);
+                ids.push(data.id); 
+            }
+
             const categoryId = document.getElementById('category').value;
             const priority = document.getElementById('priority').value;
             const name = document.getElementById('title').value;
             const price = document.getElementById('price').value;
             var description = tinymce.activeEditor.getContent();
+
             var request = {
                 name,
                 priority,
@@ -206,16 +279,25 @@
                 price,
                 description,
                 ids
-            }
+            };
+
             console.log("Content:", request);
-            let response = axios.post('https://goose.itstep.click/api/Products/add', request, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': '*/*'
-                }
-            });
-            console.log(response.data);
-            location.href = "/pages/admin/adminPanel";
+
+            try {
+                let response = await axios.post(`${window.API_BASE_URL}/api/Products/add`, request, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+
+                console.log(response.data);
+            } catch (error) {
+                console.error("Error submitting the product:", error);
+            } finally {
+                hide_loading();
+                location.href = "/pages/admin/products/products.html";
+            }
         });
     </script>
 

@@ -52,7 +52,7 @@ async function fetchCategories() {
         const query = Qs.stringify(search);
       
 
-        const response = await axios.get(`https://goose.itstep.click/api/Categories/search?${query}`, {
+        const response = await axios.get(`${window.API_BASE_URL}/api/Categories/search?${query}`, {
             headers: {
                 'Accept': '*/*'
             }
@@ -69,7 +69,7 @@ async function fetchCategories() {
             listCategories.innerHTML += `
                         <tr id="${item.id}"  class="bg-white border-b  border-gray-200 hover:bg-gray-50 ">
         <td class="p-4">
-            <img src="https://goose.itstep.click/images/100_${item.image}" alt="Apple Watch">
+            <img src="${window.API_BASE_URL}/images/100_${item.image}" alt="Apple Watch">
         </td>
         <td class="px-6 py-4 font-semibold text-gray-900 ">
             ${item.title}
@@ -189,7 +189,7 @@ function loadPagination(pages, currentPage) {
 
 
 async function EditCategory(categoryId) {
-    const response = await axios.get(`https://goose.itstep.click/api/Categories/get/${categoryId}`, {
+    const response = await axios.get(`${window.API_BASE_URL}/api/Categories/get/${categoryId}`, {
         headers: {
             'Accept': '*/*'
         }

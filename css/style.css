@@ -35,6 +35,7 @@ center {
     height: 50px;
 }
 
+
 @media only screen and (max-width: 1400px) {
     .password {
         width: 180px;

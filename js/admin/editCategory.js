@@ -23,7 +23,7 @@ categoryForm.onsubmit = (e) => {
         ...(newImage !== null && { image: newImage }),
         urlSlug: document.getElementById("slug").value
     };
-    const url = `https://goose.itstep.click/api/Categories/edit?${data}`;
+    const url = `${window.API_BASE_URL}/api/Categories/edit?${data}`;
    
 
     xhr.open("PUT", url, true);
@@ -88,7 +88,7 @@ window.addEventListener('load', async () => {
     show_loading();
     const id = new URLSearchParams(window.location.search).get('id') || null;
     console.log('id', id);
-    const response = await axios.get(`https://goose.itstep.click/api/Categories/get/${id}`, {
+    const response = await axios.get(`${window.API_BASE_URL}/api/Categories/get/${id}`, {
         headers: {
             'Accept': '*/*'
         }
@@ -96,7 +96,7 @@ window.addEventListener('load', async () => {
     const { data } = response;
     console.log('Get category by Id', data);
 
-    document.getElementById('avatar').src = `https://goose.itstep.click/images/100_${data.image}`;
+    document.getElementById('avatar').src = `${window.API_BASE_URL}/images/100_${data.image}`;
     document.getElementById('name').value = data.title;
     document.getElementById('priority').value = data.priority;
     document.getElementById('slug').value = data.urlSlug;

@@ -30,7 +30,7 @@ async function fetchProducts() {
             ${item.price} UAH
         </td>
         <td class="px-6 py-4" >
-           <a href="#" class="font-medium text-red-600 dark:text-blue-500 hover:underline">
+           <a href="/pages/admin/products/editProduct.html?id=${item.id}" class="font-medium text-red-600 dark:text-blue-500 hover:underline">
            <i class="fa fa-3x fa-pencil-square-o" aria-hidden="true"></i>
         </a>
         <a href="#" data-delete="${item.id}" data-delete-name="${item.name}" data-modal-target="deleteModal" data-modal-toggle="deleteModal" class=" font-medium text-red-600 dark:text-blue-500 hover:underline">
